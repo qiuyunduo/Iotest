@@ -1,0 +1,19 @@
+New String to write to file ...1543406234869
+RandomAccessFile randomAccessFile = new RandomAccessFile("Iotest1/IOTest/01.txt","rw");
+注意buffer首先被插入到数组，然后再将数组作为 channel.read() 的输入参数。read() 方法按照 buffer 在数组中的顺序将从 channel 中读取的数据写入到buffer，当一个 buffer 被写满后，channel 紧接着向另一个 buffer 中写。
+
+Scattering Reads在移动下一个buffer前，必须填满当前的buffer，这也意味着它不适用于动态消息(译者注：消息大小不固定)
+。换句话说，如果存在消息头和消息体，消息头必须完成填充（例如 128byte），Scattering Reads才能正常工作。
+buffer的一个数组被传递给了 write() 方法，这个方法写他们在数组中遇到的接下来的 buffer 的内容。只是这些数据在 buffer 的 position 和 limit 直接被写。因此，如果一个buffer有一个128字节的容量，但是只包含了58个字节，只有58个字节可以从 buffer 中写到 channel 。因此，一个聚集写操作通过动态可变大小的消息部分会工作的很好，跟分散读取正好相反。
+
+分散/聚集的应用
+scatter / gather经常用于需要将传输的数据分开处理的场合。例如，您可能在编写一个使用消息对象的网络应用程序，每一个消息被划分为固定长度的头部和固定长度的正文。您可以创建一个刚好可以容纳头部的缓冲区和另一个刚好可以容纳正文的缓冲区。当您将它们放入一个数组中并使用分散读取来向它们读入消息时，头部和正文将整齐地划分到这两个缓冲区中。
+
+我们从缓冲区所得到的方便性对于缓冲区数组同样有效。因为每一个缓冲区都跟踪自己还可以接受多少数据，所以分散读取会自动找到有空间接受数据的第一个缓冲区。在这个缓冲区填满后，它就会移动到下一个缓冲区。
+
+
+---------------------
+作者：阿_毅
+来源：CSDN
+原文：https://blog.csdn.net/huangwenyi1010/article/details/75577091
+版权声明：本文为博主原创文章，转载请附上博文链接！
