@@ -1,8 +1,6 @@
 package thread;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @Author: qiuyunduo
@@ -15,10 +13,14 @@ public class ThreadPoolTest {
 
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newFixedThreadPool(20);
+        ArrayBlockingQueue arrayBlockingQueue = new ArrayBlockingQueue<>(10);
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10,20,5, TimeUnit.MINUTES,arrayBlockingQueue);
+
 
         for (int i = 0; i < POOL_NUM; i++){
             RunAbleThread runAbleThread = new RunAbleThread();
-            executorService.execute(runAbleThread);
+//            executorService.execute(runAbleThread);
+            threadPoolExecutor.execute(runAbleThread);
         }
 
         executorService.shutdown();
